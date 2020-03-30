@@ -2,9 +2,9 @@ name: .NET Core
 
 on:
   push:
-    branches: [ master/Chat-Chan-Debug ]
+    branches: [ master ]
   pull_request:
-    branches: [ master/Chat-Chan-Debug ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -18,8 +18,8 @@ jobs:
       with:
         dotnet-version: 3.1.101
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore "./Chat-Chan-Debug/Chat-Chan-Debug/Chat-Chan-Debug.csproj"
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build "./Chat-Chan-Debug/Chat-Chan-Debug.sln" --configuration Release --no-restore
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test "./Chat-Chan-Debug/Chat-Chan-Debug/Chat-Chan-Debug.csproj" --no-restore --verbosity normal
