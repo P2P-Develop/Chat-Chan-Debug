@@ -2,9 +2,9 @@ name: .NET Core
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master/Chat-Chan-Debug ]
   pull_request:
-    branches: [ master ]
+    branches: [ master/Chat-Chan-Debug ]
 
 jobs:
   build:
