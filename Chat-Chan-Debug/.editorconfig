@@ -1,0 +1,13 @@
+﻿[*.cs]
+
+# CS8602: null 参照の可能性があるものの逆参照です。
+dotnet_diagnostic.CS8602.severity = none
+
+# CS8604: Null 参照引数の可能性があります。
+dotnet_diagnostic.CS8604.severity = none
+
+# CA1031: Do not catch general exception types
+dotnet_diagnostic.CA1031.severity = none
+
+# CS8601: Null 参照代入の可能性があります。
+dotnet_diagnostic.CS8601.severity = none
