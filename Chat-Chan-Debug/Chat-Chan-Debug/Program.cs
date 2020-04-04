@@ -5,13 +5,22 @@ namespace Chat_Chan_Debug
 {
     internal class Program
     {
+        #region Public valiables
+
         public static bool quitFlag;
         public static bool connectedFlag;
         public static int phase = -1;
         public static string? addr;
         public static string? user;
+
+        #endregion
+
+        #region Private instances
+
         private static Assembly? asm;
         private static Version? ver;
+
+        #endregion
 
         #region Main
 
@@ -48,6 +57,8 @@ namespace Chat_Chan_Debug
 
         #endregion
 
+        #region Loads
+
         static void Load()
         {
             asm = Assembly.GetExecutingAssembly();
@@ -59,6 +70,10 @@ namespace Chat_Chan_Debug
         {
 
         }
+
+        #endregion
+
+        #region Prompt
 
         static void Prompt(bool connected, int? phase)
         {
@@ -135,5 +150,7 @@ namespace Chat_Chan_Debug
                 Console.Write(' ');
             }
         }
+
+        #endregion
     }
 }

@@ -10,13 +10,24 @@ namespace Chat_Chan_Debug
 {
     public static class Commands
     {
+        #region Private instances
+
         private static TcpClient call = new TcpClient();
         private static TcpClient chat = new TcpClient();
         private static TcpClient command = new TcpClient();
         private static readonly SecureString decryptKey = new SecureString();
         private static readonly SecureString encryptKey = new SecureString();
         private static JoinParser? tokenResponse;
+
+        #endregion
+
+        #region Private valiables
+
         private static int[] port = new int[1];
+
+        #endregion
+
+        #region Command execute
 
         public static CommandResult Execute(string[] command)
         {
@@ -82,6 +93,10 @@ namespace Chat_Chan_Debug
                             Console.WriteLine("Not connected.");
                             return CommandResult.Error;
                         }
+                    case "disconnect":
+                        return Disconnect();
+                    case "dc":
+                        return Disconnect();
                     case "exit":
                         Exit();
                         break;
@@ -105,6 +120,10 @@ namespace Chat_Chan_Debug
 
             return CommandResult.Fatal;
         }
+
+        #endregion
+
+        #region Command functions
 
         private static CommandResult Help()
         {
@@ -152,6 +171,19 @@ namespace Chat_Chan_Debug
             }
         }
 
+        private static void Exit()
+        {
+            if (Program.connectedFlag)
+            {
+                _ = Disconnect();
+            }
+            Program.quitFlag = true;
+        }
+
+        #endregion
+
+        #region Client command functions
+
         private static CommandResult Connect(string addr)
         {
             if (string.IsNullOrEmpty(addr))
@@ -182,7 +214,7 @@ namespace Chat_Chan_Debug
             Program.phase = 0;
             Program.addr = addr;
             Program.connectedFlag = true;
-            Console.WriteLine("Connect Phase 0 Successfly completed.\nType 'next' or 'connect -p 1' to Transition into Phase 1.");
+            Console.WriteLine("Server Connect Phase Successfly completed.\nType 'next' or 'connect -s call' to login call server.");
             return CommandResult.Success;
         }
         private static CommandResult Connect(string user, int phase)
@@ -215,64 +247,6 @@ namespace Chat_Chan_Debug
                 Console.WriteLine("Server port closed");
                 return CommandResult.Error;
             }
-        }
-
-        private static CommandResult ConnectPhase_3(string user, out MemoryStream? ms, out NetworkStream ns, out byte[]? _sendBytes, out byte[]? resBytes, out int resSize, ref string connectedJson)
-        {
-            command = new TcpClient(Program.addr, port[1]);
-            ns = command.GetStream();
-            ms = new MemoryStream();
-            _sendBytes = Encoding.UTF8.GetBytes("{ \"exec\": \"join\", \"name\": \"" + user + "\", \"token\": \"" + tokenResponse.Token + "\" }\r\n");
-            ns.Write(_sendBytes, 0, _sendBytes.Length);
-            _sendBytes = null;
-            resBytes = new byte[1024];
-            do
-            {
-                resSize = ns.Read(resBytes, 0, resBytes.Length);
-                if (resSize == 0)
-                {
-                    Console.WriteLine("Server closed.");
-                    return CommandResult.Error;
-                }
-                ms.Write(resBytes, 0, resSize);
-            } while (ns.DataAvailable || (resBytes[resSize - 2] != '\r' && resBytes[resSize - 1] != '\n'));
-            connectedJson = Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int)ms.Length);
-            connectedJson = connectedJson.TrimEnd('\n');
-            connectedJson = connectedJson.TrimEnd('\r');
-            tokenResponse = JsonConvert.DeserializeObject<JoinParser>(connectedJson);
-
-            Program.phase = 3;
-            Console.WriteLine("All server login successfly completed.\nDebug has ended.");
-            return CommandResult.Success;
-        }
-
-        private static CommandResult ConnectPhase_2(string user, out MemoryStream? ms, out NetworkStream ns, out byte[]? _sendBytes, out byte[]? resBytes, out int resSize, ref string connectedJson)
-        {
-            chat = new TcpClient(Program.addr, port[0]);
-            ns = chat.GetStream();
-            ms = new MemoryStream();
-            _sendBytes = Encoding.UTF8.GetBytes("{ \"exec\": \"join\", \"name\": \"" + user + "\", \"token\": \"" + tokenResponse.Token + "\" }\r\n");
-            ns.Write(_sendBytes, 0, _sendBytes.Length);
-            _sendBytes = null;
-            resBytes = new byte[1024];
-            do
-            {
-                resSize = ns.Read(resBytes, 0, resBytes.Length);
-                if (resSize == 0)
-                {
-                    Console.WriteLine("Server closed.");
-                    return CommandResult.Error;
-                }
-                ms.Write(resBytes, 0, resSize);
-            } while (ns.DataAvailable || (resBytes[resSize - 2] != '\r' && resBytes[resSize - 1] != '\n'));
-            connectedJson = Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int)ms.Length);
-            connectedJson = connectedJson.TrimEnd('\n');
-            connectedJson = connectedJson.TrimEnd('\r');
-            tokenResponse = JsonConvert.DeserializeObject<JoinParser>(connectedJson);
-
-            Program.phase = 2;
-            Console.WriteLine("Chat server successfly connected.\nType 'next' or 'connect -s command' to Connect command server.");
-            return CommandResult.Success;
         }
 
         private static CommandResult ConnectPhase_1(string user, out MemoryStream? ms, out NetworkStream ns, out byte[]? _sendBytes, out byte[] resBytes, out int resSize, ref string connectedJson)
@@ -317,14 +291,90 @@ namespace Chat_Chan_Debug
             port = tokenResponse.Port;
 
             Program.phase = 1;
-            Console.WriteLine("Call server successfly connected.\nType 'next' or 'connect -s chat' to Connect chat server.");
+            Console.WriteLine("Call server successfly connected.\nType 'next' or 'connect -s chat' to login chat server.");
             return CommandResult.Success;
         }
 
-        private static void Exit()
+        private static CommandResult ConnectPhase_2(string user, out MemoryStream? ms, out NetworkStream ns, out byte[]? _sendBytes, out byte[]? resBytes, out int resSize, ref string connectedJson)
         {
-            Program.quitFlag = true;
+            chat = new TcpClient(Program.addr, port[0]);
+            ns = chat.GetStream();
+            ms = new MemoryStream();
+            _sendBytes = Encoding.UTF8.GetBytes("{ \"exec\": \"join\", \"name\": \"" + user + "\", \"token\": \"" + tokenResponse.Token + "\" }\r\n");
+            ns.Write(_sendBytes, 0, _sendBytes.Length);
+            _sendBytes = null;
+            resBytes = new byte[1024];
+            do
+            {
+                resSize = ns.Read(resBytes, 0, resBytes.Length);
+                if (resSize == 0)
+                {
+                    Console.WriteLine("Server closed.");
+                    return CommandResult.Error;
+                }
+                ms.Write(resBytes, 0, resSize);
+            } while (ns.DataAvailable || (resBytes[resSize - 2] != '\r' && resBytes[resSize - 1] != '\n'));
+            connectedJson = Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int)ms.Length);
+            connectedJson = connectedJson.TrimEnd('\n');
+            connectedJson = connectedJson.TrimEnd('\r');
+            tokenResponse = JsonConvert.DeserializeObject<JoinParser>(connectedJson);
+
+            Program.phase = 2;
+            Console.WriteLine("Chat server successfly connected.\nType 'next' or 'connect -s command' to Connect command server.");
+            return CommandResult.Success;
+        
+        
         }
+
+        private static CommandResult ConnectPhase_3(string user, out MemoryStream? ms, out NetworkStream ns, out byte[]? _sendBytes, out byte[]? resBytes, out int resSize, ref string connectedJson)
+        {
+            command = new TcpClient(Program.addr, port[1]);
+            ns = command.GetStream();
+            ms = new MemoryStream();
+            _sendBytes = Encoding.UTF8.GetBytes("{ \"exec\": \"join\", \"name\": \"" + user + "\", \"token\": \"" + tokenResponse.Token + "\" }\r\n");
+            ns.Write(_sendBytes, 0, _sendBytes.Length);
+            _sendBytes = null;
+            resBytes = new byte[1024];
+            do
+            {
+                resSize = ns.Read(resBytes, 0, resBytes.Length);
+                if (resSize == 0)
+                {
+                    Console.WriteLine("Server closed.");
+                    return CommandResult.Error;
+                }
+                ms.Write(resBytes, 0, resSize);
+            } while (ns.DataAvailable || (resBytes[resSize - 2] != '\r' && resBytes[resSize - 1] != '\n'));
+            connectedJson = Encoding.UTF8.GetString(ms.GetBuffer(), 0, (int)ms.Length);
+            connectedJson = connectedJson.TrimEnd('\n');
+            connectedJson = connectedJson.TrimEnd('\r');
+            tokenResponse = JsonConvert.DeserializeObject<JoinParser>(connectedJson);
+
+            Program.phase = 3;
+            Console.WriteLine("All server login successfly completed.\nDebug has ended.");
+            return CommandResult.Success;
+        }
+
+        private static CommandResult Disconnect()
+        {
+            if (Program.connectedFlag)
+            {
+                call = new TcpClient();
+                chat = new TcpClient();
+                command = new TcpClient();
+                Program.connectedFlag = false;
+                Console.WriteLine("Disconnected.");
+                return CommandResult.Success;
+            }
+            else
+            {
+                Console.WriteLine("Not connected.");
+                return CommandResult.Error;
+            }
+
+        }
+
+        #endregion
     }
 
     public enum CommandResult

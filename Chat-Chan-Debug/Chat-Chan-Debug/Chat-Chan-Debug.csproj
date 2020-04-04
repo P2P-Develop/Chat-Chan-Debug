@@ -6,6 +6,25 @@
     <RootNamespace>Chat_Chan_Debug</RootNamespace>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
+    <StartupObject>Chat_Chan_Debug.Program</StartupObject>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <NeutralLanguage></NeutralLanguage>
+    <PackageReleaseNotes>'disconnect' &amp; 'dc'コマンドを追加(後者はエイリアス)
+コード整理</PackageReleaseNotes>
+    <RepositoryUrl>https://github.com/P2P-Develop/Chat-Chan-Debug</RepositoryUrl>
+    <PackageTags>1.1.0</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
   <ItemGroup>
