@@ -5,5 +5,18 @@
 Chat-Chanのデバッグ用コンソールアプリケーション。マルチプラットフォーム対応。  
 **Powerlineフォントを必ず使用してください。**  
 English -> release docs
-## Rules
+## Usage
+ファイルを解凍し、その中のexeファイルを開くか、コンソールから起動します。
+### Commands
+- 'help' - ヘルプを表示します。
+  - エイリアス: '?'
+  'help'の後に別のコマンドを入力するとそのコマンドのヘルプが表示されます。
+- 'connect [ADDR|HOST] <-u|--user> <-s|--server>' - 指定されたIPアドレス、またはホストのサーバースレッドに接続します。
+  - [ADDR|HOST] - 接続先のIPアドレス、またはホスト名。
+  - <-u|--user> - 接続ユーザー名。
+  - <-s|--server> - 接続するサーバースレッド。(call, chat, command)
+  - エイリアス: 'c'(現在未対応)
+- 'exit' - コンソールを終了します。接続されている場合は切断します。
+  - エイリアス: 'quit', 'q'
+## Contribute Rules
 - Pushの際は必ずPull requestにしてください。
