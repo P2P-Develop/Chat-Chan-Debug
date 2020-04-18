@@ -5,8 +5,10 @@
 Chat-Chanのデバッグ用コンソールアプリケーション。マルチプラットフォーム対応。  
 **Powerlineフォントを必ず使用してください。**  
 English -> release docs
-## Usage
+## Installation
 ファイルを解凍し、その中のexeファイルを開くか、コンソールから起動します。
+## Usage
+独自コマンド入力形式になっています。
 ### Commands
 - 'help' - ヘルプを表示します。
   - エイリアス: '?'
