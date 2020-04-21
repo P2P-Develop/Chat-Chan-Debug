@@ -1,4 +1,4 @@
-﻿using Chat_Chan_Debug.Command;
+﻿using Chat_Chan_Debug.Commands;
 using Chat_Chan_Debug.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace Chat_Chan_Debug
 
         #endregion
 
-        #region Public Instances
+        #region Public instances
 
         public static CommandManager? manager;
         public static TcpClient? call;
@@ -41,23 +41,23 @@ namespace Chat_Chan_Debug
 
         internal static void Main()
         {
-            Console.WriteLine("Chat-Chan Debug Application\nCreated by P2PDevelop\nThis Application are managed by MIT License.\n\n");
+            Logger.Log("Chat-Chan Debug Application\nCreated by P2PDevelop\nThis Application are managed by MIT License.\n\n", Log.None);
             Load();
             while (!quitFlag)
             {
                 try
                 {
-                    Prompt.DisplayPrompt(new Dictionary<string, ConsoleColor>() { { ver.ToString(), ConsoleColor.Blue }, { "Connecting", ConsoleColor.Red } });
+                    Prompt.DisplayPrompt(new Dictionary<string, ConsoleColor>() { { ver.ToString(), ConsoleColor.Blue } });
                     string[] _cmd = Console.ReadLine().Split();
                     switch (manager.Execute(_cmd[0], _cmd))
                     {
-                        case Command.CommandResult.Success:
+                        case CommandResult.Success:
                             continue;
-                        case Command.CommandResult.Warning:
+                        case CommandResult.Warning:
                             continue;
-                        case Command.CommandResult.Error:
+                        case CommandResult.Error:
                             continue;
-                        case Command.CommandResult.Fatal:
+                        case CommandResult.Fatal:
                             quitFlag = true;
                             break;
                         default:
@@ -66,12 +66,12 @@ namespace Chat_Chan_Debug
                 }
                 catch (InvalidArgumentException)
                 {
-                    Console.WriteLine("Invalid argument(s). type \"help\" or \"?\" to get help.");
+                    Logger.Log("Invalid argument(s). type \"help\" or \"?\" to get help.", Log.Error);
                     continue;
                 }
                 catch (CommandNotFoundException)
                 {
-                    Console.WriteLine("Unknown command. type \"help\" or \"?\" to get help.");
+                    Logger.Log("Unknown command. type \"help\" or \"?\" to get help.", Log.Error);
                     continue;
                 }
                 catch (PromptException)
@@ -79,13 +79,17 @@ namespace Chat_Chan_Debug
                     defaultPromptFlag = true;
                     Console.SetCursorPosition(0, Console.CursorTop);
                     Console.ResetColor();
-                    Console.WriteLine("Some error occurred while displaying the prompt, so change to a prompt that contains only characters.");
+                    Logger.Log("Some error occurred while displaying the prompt, so change to a prompt that contains only characters.", Log.Error);
                     continue;
                 }
                 catch (ConnectedException)
                 {
-                    Console.WriteLine("Already connected.");
+                    Logger.Log("Already connected.", Log.Warning);
                     continue;
+                }
+                catch (ServerClosedException)
+                {
+                    Logger.Log("Server closed", Log.Error);
                 }
                 catch (Exception e)
                 {
@@ -120,6 +124,10 @@ namespace Chat_Chan_Debug
             manager.ListenCommand(new CommandHelp());
             manager.ListenCommand(new CommandGetCode());
             manager.ListenCommand(new CommandExit());
+            manager.ListenCommand(new CommandBackground());
+            manager.ListenCommand(new CommandDisconnect());
+            manager.ListenCommand(new CommandCUIPrompt());
+            manager.ListenCommand(new CommandPowerlinePrompt());
         }
 
         #endregion

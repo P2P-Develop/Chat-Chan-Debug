@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Chat_Chan_Debug.Command
+namespace Chat_Chan_Debug.Commands
 {
     public class CommandHelp : IBaseCommand
     {
@@ -11,8 +11,9 @@ namespace Chat_Chan_Debug.Command
         public string GetHelp() => "<cmd> - Display this help.\n## <cmd> - The command to reference.";
         public bool IsArgument() => true;
 
-        private static readonly string h1 = "# ";
-        private static readonly string h2 = "## ";
+        
+        private const string h1 = "# ";
+        private const string h2 = "## ";
         public CommandResult Execute(string label, string[] args)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -53,7 +54,7 @@ namespace Chat_Chan_Debug.Command
             foreach (IBaseCommand command in commandList)
             {
                 Console.WriteLine(h1 + command.GetName() + " " + command.GetHelp());
-                Console.WriteLine(h2 + "Alias: " + command.GetAlias());
+                Console.WriteLine(h2 + "Alias: " + string.Join(", ", command.GetAlias()));
             }
         }
     }

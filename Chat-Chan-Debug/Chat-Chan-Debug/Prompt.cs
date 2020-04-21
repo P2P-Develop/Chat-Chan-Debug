@@ -5,10 +5,10 @@ using System.Linq;
 
 namespace Chat_Chan_Debug
 {
-    public class Prompt
+    public static class Prompt
     {
-        private static readonly char arrow = '';
-        private static readonly char space = ' ';
+        private const char arrow = '';
+        private const char space = ' ';
 
         public static void DisplayPrompt(Dictionary<string, ConsoleColor> pairs)
         {

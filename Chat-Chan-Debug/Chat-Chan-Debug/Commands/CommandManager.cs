@@ -1,11 +1,11 @@
 ﻿using Chat_Chan_Debug.Exceptions;
 using System.Collections.Generic;
 
-namespace Chat_Chan_Debug.Command
+namespace Chat_Chan_Debug.Commands
 {
     public class CommandManager
     {
-        private List<IBaseCommand>? commandList = new List<IBaseCommand>();
+        private readonly List<IBaseCommand>? commandList = new List<IBaseCommand>();
 
         private IBaseCommand? NotFoundCommand { get; set; }
 

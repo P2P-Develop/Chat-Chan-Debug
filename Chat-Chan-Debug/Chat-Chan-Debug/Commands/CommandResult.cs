@@ -1,4 +1,4 @@
-﻿namespace Chat_Chan_Debug.Command
+﻿namespace Chat_Chan_Debug.Commands
 {
     public enum CommandResult
     {

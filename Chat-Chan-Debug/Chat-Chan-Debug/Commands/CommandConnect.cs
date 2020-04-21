@@ -1,11 +1,7 @@
 ﻿using Chat_Chan_Debug.Exceptions;
 using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
 
-namespace Chat_Chan_Debug.Command
+namespace Chat_Chan_Debug.Commands
 {
     public class CommandConnect : IBaseCommand
     {
@@ -36,12 +32,6 @@ namespace Chat_Chan_Debug.Command
         private void Connect(string host, int port)
         {
             Console.WriteLine("Chat-Chan Connecting Service\nHost: " + host + "\nPort: " + port);
-            Logger.Log("Connecting call server...", Log.Info);
-            Program.call = new TcpClient(host, port);
-        }
-        private void Connect(IPAddress addr, int[] ports, int phase)
-        {
-
         }
     }
 }

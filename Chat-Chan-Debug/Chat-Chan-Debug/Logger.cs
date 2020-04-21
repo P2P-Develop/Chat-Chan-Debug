@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Chat_Chan_Debug
 {
@@ -30,6 +28,8 @@ namespace Chat_Chan_Debug
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.Write("[-]");
                     break;
+                case Chat_Chan_Debug.Log.None:
+                    break;
                 default:
                     return;
             }
@@ -45,6 +45,7 @@ namespace Chat_Chan_Debug
         Warning,
         Error,
         Add,
-        Remove
+        Remove,
+        None
     }
 }
