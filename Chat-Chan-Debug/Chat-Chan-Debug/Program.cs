@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Chat_Chan_Debug.Command;
+using Chat_Chan_Debug.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Reflection;
 
 namespace Chat_Chan_Debug
@@ -7,11 +11,22 @@ namespace Chat_Chan_Debug
     {
         #region Public valiables
 
-        public static bool quitFlag;
-        public static bool connectedFlag;
+        public static bool quitFlag = false;
+        public static bool connectedFlag = false;
         public static int phase = -1;
         public static string? addr;
         public static string? user;
+        public static string? version;
+        public static bool defaultPromptFlag = false;
+
+        #endregion
+
+        #region Public Instances
+
+        public static CommandManager? manager;
+        public static TcpClient? call;
+        public static TcpClient? chat;
+        public static TcpClient? command;
 
         #endregion
 
@@ -30,26 +45,51 @@ namespace Chat_Chan_Debug
             Load();
             while (!quitFlag)
             {
-                Prompt(connectedFlag, phase);
                 try
                 {
-                    switch (Commands.Execute(Console.ReadLine().Split(" ")))
+                    Prompt.DisplayPrompt(new Dictionary<string, ConsoleColor>() { { ver.ToString(), ConsoleColor.Blue }, { "Connecting", ConsoleColor.Red } });
+                    string[] _cmd = Console.ReadLine().Split();
+                    switch (manager.Execute(_cmd[0], _cmd))
                     {
-                        case CommandResult.Success:
+                        case Command.CommandResult.Success:
                             continue;
-                        case CommandResult.Warning:
+                        case Command.CommandResult.Warning:
                             continue;
-                        case CommandResult.Error:
+                        case Command.CommandResult.Error:
                             continue;
-                        case CommandResult.Fatal:
+                        case Command.CommandResult.Fatal:
                             quitFlag = true;
                             break;
                         default:
                             continue;
                     }
                 }
-                catch (Exception)
+                catch (InvalidArgumentException)
                 {
+                    Console.WriteLine("Invalid argument(s). type \"help\" or \"?\" to get help.");
+                    continue;
+                }
+                catch (CommandNotFoundException)
+                {
+                    Console.WriteLine("Unknown command. type \"help\" or \"?\" to get help.");
+                    continue;
+                }
+                catch (PromptException)
+                {
+                    defaultPromptFlag = true;
+                    Console.SetCursorPosition(0, Console.CursorTop);
+                    Console.ResetColor();
+                    Console.WriteLine("Some error occurred while displaying the prompt, so change to a prompt that contains only characters.");
+                    continue;
+                }
+                catch (ConnectedException)
+                {
+                    Console.WriteLine("Already connected.");
+                    continue;
+                }
+                catch (Exception e)
+                {
+                    Logger.Log(e.ToString(), Log.Error);
                     continue;
                 }
             }
@@ -59,98 +99,30 @@ namespace Chat_Chan_Debug
 
         #region Loads
 
-        static void Load()
+        private static void Load()
         {
             asm = Assembly.GetExecutingAssembly();
             ver = asm.GetName().Version;
+            version = ver.ToString();
+            manager = new CommandManager();
             CheckError();
+            ListenCommand();
         }
 
-        static void CheckError()
+        private static void CheckError()
         {
 
         }
 
-        #endregion
-
-        #region Prompt
-
-        static void Prompt(bool connected, int? phase)
+        private static void ListenCommand()
         {
-            Console.BackgroundColor = ConsoleColor.Blue;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.Write(" Debug-" + ver + ' ');
-            if (connected)
-            {
-                Console.BackgroundColor = ConsoleColor.Green;
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.Write('');
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write("  " + addr + ' ');
-                switch (phase)
-                {
-                    case -1:
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.Write('');
-                        Console.ResetColor();
-                        Console.Write(' ');
-                        break;
-                    case 0:
-                        Console.BackgroundColor = ConsoleColor.Gray;
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.Write('');
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.Write("  Connecting ");
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        Console.ForegroundColor = ConsoleColor.Gray;
-                        Console.Write('');
-                        Console.ResetColor();
-                        Console.Write(' ');
-                        break;
-                    case 1:
-                        Console.BackgroundColor = ConsoleColor.Red;
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.Write('');
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.Write("  Call ");
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.Write('');
-                        Console.ResetColor();
-                        Console.Write(' ');
-                        break;
-                    case 2:
-                        Console.BackgroundColor = ConsoleColor.Yellow;
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.Write('');
-                        Console.ForegroundColor = ConsoleColor.White;
-                        Console.Write("  Call & Chat ");
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.Write('');
-                        Console.ResetColor();
-                        Console.Write(' ');
-                        break;
-                    case 3:
-                        Console.BackgroundColor = ConsoleColor.Black;
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.Write('');
-                        Console.ResetColor();
-                        Console.Write(' ');
-                        break;
-                }
-            }
-            else
-            {
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.Write('');
-                Console.ResetColor();
-                Console.Write(' ');
-            }
+            manager.ListenCommand(new CommandConnect());
+            manager.ListenCommand(new CommandHelp());
+            manager.ListenCommand(new CommandGetCode());
+            manager.ListenCommand(new CommandExit());
         }
 
         #endregion
+
     }
 }

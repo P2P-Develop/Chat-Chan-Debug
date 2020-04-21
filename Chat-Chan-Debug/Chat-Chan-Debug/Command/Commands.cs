@@ -322,8 +322,8 @@ namespace Chat_Chan_Debug
             Program.phase = 2;
             Console.WriteLine("Chat server successfly connected.\nType 'next' or 'connect -s command' to Connect command server.");
             return CommandResult.Success;
-        
-        
+
+
         }
 
         private static CommandResult ConnectPhase_3(string user, out MemoryStream? ms, out NetworkStream ns, out byte[]? _sendBytes, out byte[]? resBytes, out int resSize, ref string connectedJson)

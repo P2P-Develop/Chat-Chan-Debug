@@ -7,13 +7,13 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <Nullable>enable</Nullable>
     <StartupObject>Chat_Chan_Debug.Program</StartupObject>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
+    <AssemblyVersion>1.2.0.1</AssemblyVersion>
+    <FileVersion>1.1.0.1</FileVersion>
     <NeutralLanguage></NeutralLanguage>
     <PackageReleaseNotes>'disconnect' &amp; 'dc'コマンドを追加(後者はエイリアス)
 コード整理</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/P2P-Develop/Chat-Chan-Debug</RepositoryUrl>
-    <PackageTags>1.1.0</PackageTags>
+    <PackageTags>1.2.0-pre1</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
