@@ -3,7 +3,7 @@
 [![GitHub license](https://img.shields.io/github/license/P2P-Develop/Chat-Chan)](https://github.com/P2P-Develop/Chat-Chan/blob/master/LICENSE)
 ## Overview
 Chat-Chanのデバッグ用コンソールアプリケーション。マルチプラットフォーム対応。  
-**Powerlineフォントを必ず使用してください。**  
+**Powerlineフォント、またはNerdフォントを必ず使用してください。**  
 English -> release docs
 ## Installation
 ファイルを解凍し、その中のexeファイルを開くか、コンソールから起動します。
