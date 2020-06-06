@@ -1,58 +1,50 @@
-﻿using Chat_Chan_Debug.Exceptions;
+﻿using System;
+using Chat_Chan_Debug.Exceptions;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 
 namespace Chat_Chan_Debug.Commands
 {
     public class CommandManager
     {
-        private readonly List<IBaseCommand>? commandList = new List<IBaseCommand>();
+        private readonly List<IBaseCommand>? _commandList = new List<IBaseCommand>();
 
         private IBaseCommand? NotFoundCommand { get; set; }
 
         public void ListenCommand<T>(T commands) where T : IBaseCommand
         {
-            commandList.Add(commands);
+            if (commands != null) _commandList?.Add(commands);
         }
 
         public void UnListenCommand<T>(T commands) where T : IBaseCommand
         {
-            commandList.Remove(commands);
+            if (commands != null) _commandList?.Remove(commands);
         }
 
         public CommandResult Execute(string commandName, string[] arg)
         {
+            if (commandName == null) throw new ArgumentNullException(nameof(commandName));
             List<string> args = new List<string>(arg);
+            if (args == null) throw new ArgumentNullException(nameof(args));
             args.RemoveAt(0);
-            if (commandName is "")
+            if (commandName != null && commandName is "")
                 return CommandResult.Success;
-            try
+            if (_commandList == null)
+                return NotFoundCommand?.Execute(args.ToArray()) ?? throw new CommandNotFoundException();
+            foreach (IBaseCommand command in _commandList)
             {
-                foreach (IBaseCommand command in commandList)
-                {
-                    string[]? aliasList = command.GetAlias();
-                    string label = command.GetName();
-                    if (label == commandName)
-                        return command.Execute(commandName, args.ToArray());
-                    else if (aliasList != null)
-                    {
-                        foreach (string aliasStr in aliasList)
-                        {
-                            if (aliasStr == commandName)
-                                return command.Execute(commandName, args.ToArray());
-                        }
-                    }
-                }
-                if (NotFoundCommand != null)
-                    return NotFoundCommand.Execute(commandName, args.ToArray());
-                else
-                    throw new CommandNotFoundException();
+                var aliasList = command.GetAlias();
+                if (command.GetName() == commandName)
+                    return command.Execute(args.ToArray());
+                if (aliasList == null) continue;
+                if (aliasList.Any(aliasStr => aliasStr == commandName))
+                    return command.Execute(args.ToArray());
             }
-            catch (CommandNotFoundException)
-            {
-                throw;
-            }
+
+            return NotFoundCommand?.Execute(args.ToArray()) ?? throw new CommandNotFoundException();
         }
 
-        public List<IBaseCommand> GetCommandList() => commandList;
+        public List<IBaseCommand> GetCommandList() => _commandList ?? throw new NoNullAllowedException();
     }
 }

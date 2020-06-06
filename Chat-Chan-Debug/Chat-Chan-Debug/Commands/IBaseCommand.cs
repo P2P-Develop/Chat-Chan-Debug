@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Chat_Chan_Debug.Commands
+﻿namespace Chat_Chan_Debug.Commands
 {
     public interface IBaseCommand
     {
-        public CommandResult Execute(string label, string[] args);
+        public CommandResult Execute(string[] args);
 
         public string GetName();
 
@@ -15,6 +11,5 @@ namespace Chat_Chan_Debug.Commands
         public string GetHelp();
 
         public bool IsArgument();
-
     }
 }

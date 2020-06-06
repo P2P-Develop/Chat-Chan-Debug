@@ -4,10 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Reflection;
+using static System.Console;
+using static Chat_Chan_Debug.Logger;
+using ReadLine = System.ReadLine;
 
 namespace Chat_Chan_Debug
 {
-    internal class Program
+    internal static class Program
     {
         #region Public valiables
 
@@ -16,98 +19,93 @@ namespace Chat_Chan_Debug
         public static int phase = -1;
         public static string? addr;
         public static string? user;
-        public static string? version;
         public static bool defaultPromptFlag = false;
 
-        #endregion
+        #endregion Public valiables
 
-        #region Public instances
+        #region Internal instances
 
         public static CommandManager? manager;
-        public static TcpClient? call;
-        public static TcpClient? chat;
-        public static TcpClient? command;
+        internal static TcpClient? call;
+        internal static TcpClient? chat;
+        internal static TcpClient? command;
 
-        #endregion
+        #endregion Internal instances
 
         #region Private instances
 
-        private static Assembly? asm;
-        private static Version? ver;
+        private static Assembly? _asm;
+        private static Version? _ver;
 
-        #endregion
+        #endregion Private instances
 
         #region Main
 
         internal static void Main()
         {
-            Logger.Log("Chat-Chan Debug Application\nCreated by P2PDevelop\nThis Application are managed by MIT License.\n\n", Log.None);
+            Log("Chat-Chan Debug Application\nCreated by P2PDevelop\nThis Application are managed by MIT License.\n\n", Log.None);
             Load();
             while (!quitFlag)
             {
                 try
                 {
-                    Prompt.DisplayPrompt(new Dictionary<string, ConsoleColor>() { { ver.ToString(), ConsoleColor.Blue } });
-                    string[] _cmd = Console.ReadLine().Split();
-                    switch (manager.Execute(_cmd[0], _cmd))
-                    {
-                        case CommandResult.Success:
-                            continue;
-                        case CommandResult.Warning:
-                            continue;
-                        case CommandResult.Error:
-                            continue;
-                        case CommandResult.Fatal:
-                            quitFlag = true;
-                            break;
-                        default:
-                            continue;
-                    }
+                    Prompt.DisplayPrompt(new Dictionary<string, ConsoleColor>() { { _ver?.ToString(), ConsoleColor.Blue } });
+                    string[] cmd = ReadLine.Read().Split();
+                    if (manager != null)
+                        switch (manager.Execute(cmd[0], cmd))
+                        {
+                            case CommandResult.Success:
+                                continue;
+                            case CommandResult.Warning:
+                                continue;
+                            case CommandResult.Error:
+                                continue;
+                            case CommandResult.Fatal:
+                                quitFlag = true;
+                                break;
+
+                            default:
+                                continue;
+                        }
                 }
                 catch (InvalidArgumentException)
                 {
-                    Logger.Log("Invalid argument(s). type \"help\" or \"?\" to get help.", Log.Error);
-                    continue;
+                    Log("Invalid argument(s). type \"help\" or \"?\" to get help.", Log.Error);
                 }
                 catch (CommandNotFoundException)
                 {
-                    Logger.Log("Unknown command. type \"help\" or \"?\" to get help.", Log.Error);
-                    continue;
+                    Log("Unknown command. type \"help\" or \"?\" to get help.", Log.Error);
                 }
                 catch (PromptException)
                 {
                     defaultPromptFlag = true;
-                    Console.SetCursorPosition(0, Console.CursorTop);
-                    Console.ResetColor();
-                    Logger.Log("Some error occurred while displaying the prompt, so change to a prompt that contains only characters.", Log.Error);
-                    continue;
+                    SetCursorPosition(0, CursorTop);
+                    ResetColor();
+                    Log("Some error occurred while displaying the prompt, so change to a prompt that contains only characters.", Log.Error);
                 }
                 catch (ConnectedException)
                 {
-                    Logger.Log("Already connected.", Log.Warning);
-                    continue;
+                    Log("Already connected.", Log.Warning);
                 }
                 catch (ServerClosedException)
                 {
-                    Logger.Log("Server closed", Log.Error);
+                    Log("Server closed", Log.Error);
                 }
                 catch (Exception e)
                 {
-                    Logger.Log(e.ToString(), Log.Error);
-                    continue;
+                    Log(e.ToString(), Log.Error);
                 }
             }
         }
 
-        #endregion
+        #endregion Main
 
         #region Loads
 
         private static void Load()
         {
-            asm = Assembly.GetExecutingAssembly();
-            ver = asm.GetName().Version;
-            version = ver.ToString();
+            _asm = Assembly.GetExecutingAssembly();
+            _ver = _asm.GetName().Version;
             manager = new CommandManager();
             CheckError();
             ListenCommand();
@@ -115,7 +113,6 @@ namespace Chat_Chan_Debug
 
         private static void CheckError()
         {
-
         }
 
         private static void ListenCommand()
@@ -130,7 +127,6 @@ namespace Chat_Chan_Debug
             manager.ListenCommand(new CommandPowerlinePrompt());
         }
 
-        #endregion
-
+        #endregion Loads
     }
 }

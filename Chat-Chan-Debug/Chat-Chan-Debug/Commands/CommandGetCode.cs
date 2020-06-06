@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Chat_Chan_Debug.Commands
+﻿namespace Chat_Chan_Debug.Commands
 {
-    class CommandGetCode : IBaseCommand
+    internal class CommandGetCode : IBaseCommand
     {
         public string GetName() => "getcode";
-        public string[]? GetAlias() => new string[] { "code" };
+
+        public string[]? GetAlias() => new[] { "code" };
+
         public string GetHelp() => "Get the code if connected.";
+
         public bool IsArgument() => false;
 
-        public CommandResult Execute(string label, string[] args)
+        public CommandResult Execute(string[] args)
         {
             return CommandResult.Success;
         }

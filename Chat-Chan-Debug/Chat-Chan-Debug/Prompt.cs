@@ -7,11 +7,12 @@ namespace Chat_Chan_Debug
 {
     public static class Prompt
     {
-        private const char arrow = '';
-        private const char space = ' ';
+        private const char Arrow = '';
+        private const char Space = ' ';
 
         public static void DisplayPrompt(Dictionary<string, ConsoleColor> pairs)
         {
+            if (pairs == null) throw new ArgumentNullException(nameof(pairs));
             try
             {
                 if (Program.defaultPromptFlag)
@@ -20,18 +21,18 @@ namespace Chat_Chan_Debug
                     return;
                 }
                 int treeIndex = 0;
-                foreach(KeyValuePair<string, ConsoleColor> pair in pairs)
+                foreach (KeyValuePair<string, ConsoleColor> pair in pairs)
                 {
                     ConsoleColor color = pair.Value;
                     string tree = pair.Key;
                     Console.BackgroundColor = color;
-                    Console.Write(space + tree + space);
+                    Console.Write(Space + tree + Space);
                     if (pairs.Count == treeIndex + 1)
                     {
                         Console.ResetColor();
                         Console.ForegroundColor = color;
-                        Console.Write(arrow);
-                        Console.Write(space);
+                        Console.Write(Arrow);
+                        Console.Write(Space);
                         Console.ResetColor();
                     }
                     else if (pairs.Count > treeIndex + 1)
@@ -39,8 +40,8 @@ namespace Chat_Chan_Debug
                         ConsoleColor nextColor = pairs.Values.ToArray()[treeIndex + 1];
                         Console.ForegroundColor = color;
                         Console.BackgroundColor = nextColor;
-                        Console.Write(arrow);
-                        Console.Write(space);
+                        Console.Write(Arrow);
+                        Console.Write(Space);
                         Console.ResetColor();
                     }
 
