@@ -15,26 +15,17 @@ namespace Chat_Chan_Debug.Commands
 
         public CommandResult Execute(string[] args)
         {
-            try
+            if (!Program.connectedFlag)
             {
-                if (!Program.connectedFlag)
-                {
-                    return CommandResult.Success;
-                }
-                else
-                {
-                    throw new ConnectedException();
-                }
+                return CommandResult.Success;
             }
-            catch (ConnectedException)
-            {
-                throw;
-            }
+
+            throw new ConnectedException();
         }
 
         private void Connect(string host, int port)
         {
-            Console.WriteLine("Chat-Chan Connecting Service\nHost: " + host + "\nPort: " + port);
+            Console.WriteLine($"Chat-Chan Connecting Service\nHost: {host}\nPort: {port}");
         }
     }
 }

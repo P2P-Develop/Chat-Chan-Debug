@@ -2,6 +2,7 @@
 using Chat_Chan_Debug.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
 using static System.Console;
@@ -14,7 +15,7 @@ namespace Chat_Chan_Debug
     {
         #region Public valiables
 
-        public static bool quitFlag = false;
+        public static bool quitFlag;
         public static bool connectedFlag = false;
         public static int phase = -1;
         public static string? addr;
@@ -23,14 +24,17 @@ namespace Chat_Chan_Debug
 
         #endregion Public valiables
 
-        #region Internal instances
+        #region Public instances
 
         public static CommandManager? manager;
-        internal static TcpClient? call;
-        internal static TcpClient? chat;
-        internal static TcpClient? command;
 
-        #endregion Internal instances
+        public static TcpClient? Chat { get; set; }
+
+        public static TcpClient? Call { get; set; }
+
+        public static TcpClient? Command { get; set; }
+
+        #endregion Public instances
 
         #region Private instances
 
@@ -49,10 +53,10 @@ namespace Chat_Chan_Debug
             {
                 try
                 {
-                    Prompt.DisplayPrompt(new Dictionary<string, ConsoleColor>() { { _ver?.ToString(), ConsoleColor.Blue } });
+                    Prompt.DisplayPrompt(new Dictionary<string, ConsoleColor>() { { _ver?.ToString() ?? "Unknown version", ConsoleColor.Blue } });
                     string[] cmd = ReadLine.Read().Split();
                     if (manager != null)
-                        switch (manager.Execute(cmd[0], cmd))
+                        switch (manager.Execute(cmd[0], cmd.Skip(1)))
                         {
                             case CommandResult.Success:
                                 continue;
@@ -117,14 +121,14 @@ namespace Chat_Chan_Debug
 
         private static void ListenCommand()
         {
-            manager.ListenCommand(new CommandConnect());
-            manager.ListenCommand(new CommandHelp());
-            manager.ListenCommand(new CommandGetCode());
-            manager.ListenCommand(new CommandExit());
-            manager.ListenCommand(new CommandBackground());
-            manager.ListenCommand(new CommandDisconnect());
-            manager.ListenCommand(new CommandCUIPrompt());
-            manager.ListenCommand(new CommandPowerlinePrompt());
+            manager?.ListenCommand(new CommandConnect());
+            manager?.ListenCommand(new CommandHelp());
+            manager?.ListenCommand(new CommandGetCode());
+            manager?.ListenCommand(new CommandExit());
+            manager?.ListenCommand(new CommandBackground());
+            manager?.ListenCommand(new CommandDisconnect());
+            manager?.ListenCommand(new CommandCUIPrompt());
+            manager?.ListenCommand(new CommandPowerlinePrompt());
         }
 
         #endregion Loads

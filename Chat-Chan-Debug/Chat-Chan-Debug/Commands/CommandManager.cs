@@ -22,7 +22,7 @@ namespace Chat_Chan_Debug.Commands
             if (commands != null) _commandList?.Remove(commands);
         }
 
-        public CommandResult Execute(string commandName, string[] arg)
+        public CommandResult Execute(string commandName, IEnumerable<string> arg)
         {
             if (commandName == null) throw new ArgumentNullException(nameof(commandName));
             List<string> args = new List<string>(arg);
